@@ -9,7 +9,8 @@
 
 #include <iostream>
 
-extern const int DIMENSION;
+extern const int GRID_DIMENSION;
+extern const int BOX_DIMENSION;
 extern const int MIN_VALUE;
 extern const int MAX_VALUE;
 extern const int EMPTY_VALUE;
@@ -75,6 +76,17 @@ public:
 	 * @return     True if solved, False otherwise.
 	 */
 	bool isSolved();
+
+
+	/**
+	 * @brief      Gets the cell at row and col.
+	 *
+	 * @param[in]  row   The row position of the cell
+	 * @param[in]  col   The column position of the cell
+	 *
+	 * @return     The value in the cell.
+	 */
+	int getCell(int row, int col);
 
 
 	/**
