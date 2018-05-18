@@ -9,6 +9,9 @@
 
 #include "SudokuSolver.hpp"
 
+#include <map>
+#include <vector>
+
 
 /**
  * @brief      Finds all possible valid values that can be filled into the cell
@@ -43,12 +46,12 @@ void find_possible_choices(Sudoku &game, int row, int col,
 			possibilities[game.getCell(row, i)] = false;
 		}
 	}
-	int box = row / NUM_BOXES * BOX_DIM + col / NUM_BOXES;
-	int starting_row = (box / BOX_DIM) * BOX_DIM;
-	int starting_col = (box % BOX_DIM) * BOX_DIM;
-	for (int row = starting_row; row < starting_row + BOX_DIM; row++)
+	int box = row / NUM_BOXES * BOX_DIMENSION + col / NUM_BOXES;
+	int starting_row = (box / BOX_DIMENSION) * BOX_DIMENSION;
+	int starting_col = (box % BOX_DIMENSION) * BOX_DIMENSION;
+	for (int row = starting_row; row < starting_row + BOX_DIMENSION; row++)
 	{
-		for (int col = starting_col; col < starting_col + BOX_DIM; col++)
+		for (int col = starting_col; col < starting_col + BOX_DIMENSION; col++)
 		{
 			if (game.getCell(row, col) != EMPTY_VALUE)
 			{
@@ -59,9 +62,9 @@ void find_possible_choices(Sudoku &game, int row, int col,
 	for (std::map<int, bool>::iterator it = possibilities.begin();
 	 it != possibilities.end(); it++)
 	{
-		if (it.second)
+		if (it->second)
 		{
-			possibleChoices.add(it.first);
+			possibleChoices.push_back(it->first);
 		}
 	}
 }
@@ -69,7 +72,7 @@ void find_possible_choices(Sudoku &game, int row, int col,
 
 bool solve(Sudoku &game)
 {
-	if (game.isSolved)
+	if (game.isSolved())
 	{
 		return true;
 	}
@@ -88,12 +91,12 @@ bool solve(Sudoku &game)
 			}
 		}
 	}
-	if (emptyCellRow = NOT_FOUND || emptyCellCol == NOT_FOUND)
+	if (emptyCellRow == NOT_FOUND || emptyCellCol == NOT_FOUND)
 	{
 		return false;
 	}
 	std::vector<int> possibleChoices = {};
-	find_possible_choices(&game, emptyCellRow, emptyCellCol, &possibleChoices);
+	find_possible_choices(game, emptyCellRow, emptyCellCol, possibleChoices);
 	for (int i = 0; i < possibleChoices.size(); i++) 
 	{
 		game.fillCell(emptyCellRow, emptyCellCol, possibleChoices.at(i));

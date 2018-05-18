@@ -7,6 +7,11 @@
  */
 
 
+#pragma once
+
+#include "Sudoku.hpp"
+
+
 /**
  * @brief      Solves the Sudoku game via backtracking algorithm.
  *

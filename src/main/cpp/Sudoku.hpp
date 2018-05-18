@@ -7,55 +7,42 @@
  */
 
 
-#include <iostream>
+#pragma once
+
+#include <string>
+
 
 extern const int GRID_DIMENSION;
 extern const int BOX_DIMENSION;
+extern const int NUM_BOXES;
 extern const int MIN_VALUE;
 extern const int MAX_VALUE;
 extern const int EMPTY_VALUE;
 
 
-class sudoku
+class Sudoku
 {
-private:
-	int puzzle[DIMENSION][DIMENSION];
-	int solution[DIMENSION][DIMENSION];
-
-
-	/**
-	 * @brief      Determines if all the rows in the game are valid.
-	 *
-	 * @return     True if all rows are valid, False otherwise.
-	 */
-	bool has_valid_rows();
-
-
-	/**
-	 * @brief      Determines if all the columns in the game are valid.
-	 *
-	 * @return     True if all columns are valid, False otherwise.
-	 */
-	bool has_valid_cols();
-
-
-	/**
-	 * @brief      Determines if all the boxes in the game are valid.
-	 *
-	 * @return     True if all boxes are valid, False otherwise.
-	 */
-	bool has_valid_boxes();
-
-
-	/**
-	 * @brief      Determines if all cells in the game are valid.
-	 *
-	 * @return     True if all cells are valid, False otherwise.
-	 */
-	bool is_valid();
-
-
 public:
+	/**
+	 * @brief      Constructs the object from console input.
+	 */
+	Sudoku();
+
+
+	/**
+	 * @brief      Constructs the object from file.
+	 *
+	 * @param[in]  fileName  The file name
+	 */
+	Sudoku(std::string fileName);
+
+
+	/**
+	 * @brief      Destroys the object.
+	 */
+	~Sudoku();
+
+
 	/**
 	 * @brief      Prints the status of the game to console.
 	 */
@@ -117,4 +104,41 @@ public:
 	 * @brief      Clear all cells in solution.
 	 */
 	void reset_solution();
-}
+
+
+private:
+	int **puzzle;
+	int **solution;
+
+
+	/**
+	 * @brief      Determines if all the rows in the game are valid.
+	 *
+	 * @return     True if all rows are valid, False otherwise.
+	 */
+	bool has_valid_rows();
+
+
+	/**
+	 * @brief      Determines if all the columns in the game are valid.
+	 *
+	 * @return     True if all columns are valid, False otherwise.
+	 */
+	bool has_valid_cols();
+
+
+	/**
+	 * @brief      Determines if all the boxes in the game are valid.
+	 *
+	 * @return     True if all boxes are valid, False otherwise.
+	 */
+	bool has_valid_boxes();
+
+
+	/**
+	 * @brief      Determines if all cells in the game are valid.
+	 *
+	 * @return     True if all cells are valid, False otherwise.
+	 */
+	bool is_valid();
+};
