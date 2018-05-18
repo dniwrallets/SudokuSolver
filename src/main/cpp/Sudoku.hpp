@@ -30,11 +30,12 @@ public:
 
 
 	/**
-	 * @brief      Constructs the object from file.
+	 * @brief      Constructs the object from an 2D array representing the 
+	 *             puzzle
 	 *
-	 * @param[in]  fileName  The file name
+	 * @param      puzzle  2D array representing the puzzle
 	 */
-	Sudoku(std::string fileName);
+	Sudoku(int **puzzle);
 
 
 	/**
@@ -103,7 +104,7 @@ public:
 	/**
 	 * @brief      Clear all cells in solution.
 	 */
-	void reset_solution();
+	void resetSolution();
 
 
 private:
@@ -116,7 +117,7 @@ private:
 	 *
 	 * @return     True if all rows are valid, False otherwise.
 	 */
-	bool has_valid_rows();
+	bool hasValidRows();
 
 
 	/**
@@ -124,7 +125,7 @@ private:
 	 *
 	 * @return     True if all columns are valid, False otherwise.
 	 */
-	bool has_valid_cols();
+	bool hasValidCols();
 
 
 	/**
@@ -132,7 +133,7 @@ private:
 	 *
 	 * @return     True if all boxes are valid, False otherwise.
 	 */
-	bool has_valid_boxes();
+	bool hasValidBoxes();
 
 
 	/**
@@ -140,5 +141,5 @@ private:
 	 *
 	 * @return     True if all cells are valid, False otherwise.
 	 */
-	bool is_valid();
+	bool isValid();
 };
