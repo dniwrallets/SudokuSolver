@@ -33,4 +33,4 @@ void findChoices(Sudoku &game, int row, int col,
  *
  * @return     True if solved, false if no solution exists.
  */
-bool solve(Sudoku &game);
+bool solveSudoku(Sudoku &game);

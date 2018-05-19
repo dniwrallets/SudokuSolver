@@ -62,7 +62,7 @@ void findChoices(Sudoku &game, int row, int col,
 }
 
 
-bool solve(Sudoku &game)
+bool solveSudoku(Sudoku &game)
 {
 	if (game.isSolved())
 	{
