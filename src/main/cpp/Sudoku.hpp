@@ -45,17 +45,19 @@ public:
 
 
 	/**
-	 * @brief      Prints the status of the game to console.
+	 * @brief      Returns a 2D array representing the puzzle.
+	 *
+	 * @return     2D array representing the puzzle.
 	 */
-	void print();
+	int **getPuzzle();
 
 
 	/**
-	 * @brief      Returns a string representing the status of the game.
+	 * @brief      Returns a 2D array representing the puzzle.
 	 *
-	 * @return     The string representing the status of the game.
+	 * @return     2D array representing the solution.
 	 */
-	std::string getString();
+	int **getSolution();
 
 
 	/**

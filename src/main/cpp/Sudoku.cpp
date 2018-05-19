@@ -56,17 +56,6 @@ Sudoku::~Sudoku()
 	delete[] solution;
 }
 
-void Sudoku::print()
-{
-
-}
-
-
-std::string Sudoku::getString()
-{
-	return nullptr;
-}
-
 
 bool Sudoku::isSolved()
 {
@@ -81,6 +70,42 @@ bool Sudoku::isSolved()
 		}
 	}
 	return true;
+}
+
+
+int **getPuzzle()
+{
+	p = new int*[GRID_DIMENSION];
+	for (int i = 0; i < GRID_DIMENSION; i++)
+	{
+		p[i] = new int[GRID_DIMENSION];
+	}
+	for (int row = 0; row < GRID_DIMENSION; row++)
+	{
+		for (int col = 0; col < GRID_DIMENSION; col++)
+		{
+			p[row][col] = puzzle[row][col];
+		}
+	}
+	return p;
+}
+
+
+int **getSolution()
+{
+	s = new int*[GRID_DIMENSION];
+	for (int i = 0; i < GRID_DIMENSION; i++)
+	{
+		s[i] = new int[GRID_DIMENSION];
+	}
+	for (int row = 0; row < GRID_DIMENSION; row++)
+	{
+		for (int col = 0; col < GRID_DIMENSION; col++)
+		{
+			s[row][col] = solution[row][col];
+		}
+	}
+	return s;
 }
 
 
@@ -211,25 +236,3 @@ bool Sudoku::isValid()
 {
 	return has_valid_row() && has_valid_cols() && has_valid_boxes();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
