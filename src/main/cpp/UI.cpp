@@ -13,17 +13,18 @@
 #include <string>
 
 
-static const std::string RED = "\033[31;1m";
+static const std::string RED = "\033[1;31m";
 static const std::string GREEN = "\033[32m";
 static const std::string YELLOW = "\033[33m";
 static const std::string BLUE = "\033[34m";
+static const std::string DIM_DEFAULT = "\033[2;39m";
 static const std::string RESET = "\033[0m";
-static const std::string WHITE = "\033[37m";
 
-static const std::string LEFT_INDENT = "    ";
-static const std::string HORIZONTAL_BOARDER = LEFT_INDENT + WHITE + "+-------+-------+-------+\n" + RESET;
-static const std::string VERTICAL_BOARDER = WHITE + "|" + RESET;
-static const std::string BLANK_CELL = WHITE + "." + RESET;
+static const std::string LEFT_INDENT = "\t\t";
+static const std::string HORIZONTAL_BOARDER = LEFT_INDENT + DIM_DEFAULT +
+	"+-------+-------+-------+\n" + RESET;
+static const std::string VERTICAL_BOARDER = DIM_DEFAULT + "|" + RESET;
+static const std::string BLANK_CELL = RED + "-" + RESET;
 
 
 void printSudoku(Sudoku &game)
