@@ -85,7 +85,6 @@ bool solve(Sudoku &game)
 	}
 	if (emptyCellRow == NOT_FOUND || emptyCellCol == NOT_FOUND)
 	{
-		std::cout << "exit 1" << std::endl;
 		return false;
 	}
 	std::vector<int> possibleChoices = {};
@@ -99,6 +98,5 @@ bool solve(Sudoku &game)
 		}
 		game.eraseCell(emptyCellRow, emptyCellCol);
 	}
-	std::cout << "exit 2" << std::endl;
 	return false;
 }
