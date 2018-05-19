@@ -2,7 +2,7 @@
  * SudokuSolver function implementation.
  * 
  * 
- * 2018-05-17
+ * 2018-05-19
  * John Y
  */
 
@@ -23,37 +23,39 @@
  * @param      possibleChoices  A vector pointer that contains all possible 
  *             choices
  */
-void find_possible_choices(Sudoku &game, int row, int col, 
+void findChoices(Sudoku &game, int row, int col, 
 	std::vector<int> &possibleChoices)
 {
-	if (game.getCell(row, col) != EMPTY_VALUE) 
+	if (game.getCell(row, col) != Sudoku::EMPTY_VALUE) 
 	{
 		return;
 	}
 	std::map<int, bool> possibilities;
-	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
+	for (int i = Sudoku::MIN_VALUE; i <= Sudoku::MAX_VALUE; i++)
 	{
 		possibilities.insert(std::make_pair(i, true));
 	}
-	for (int i = 0; i < GRID_DIMENSION; i++)
+	for (int i = 0; i < Sudoku::GRID_DIMENSION; i++)
 	{
-		if (game.getCell(i, col) != EMPTY_VALUE)
+		if (game.getCell(i, col) != Sudoku::EMPTY_VALUE)
 		{
 			possibilities[game.getCell(i, col)] = false;
 		}
-		if (game.getCell(row, i) != EMPTY_VALUE)
+		if (game.getCell(row, i) != Sudoku::EMPTY_VALUE)
 		{
 			possibilities[game.getCell(row, i)] = false;
 		}
 	}
-	int box = row / NUM_BOXES * BOX_DIMENSION + col / NUM_BOXES;
-	int starting_row = (box / BOX_DIMENSION) * BOX_DIMENSION;
-	int starting_col = (box % BOX_DIMENSION) * BOX_DIMENSION;
-	for (int row = starting_row; row < starting_row + BOX_DIMENSION; row++)
+	int box = row / Sudoku::NUM_BOXES * Sudoku::BOX_DIMENSION + 
+		col / Sudoku::NUM_BOXES;
+	int startingRow = (box / Sudoku::BOX_DIMENSION) * Sudoku::BOX_DIMENSION;
+	int startingCol = (box % Sudoku::BOX_DIMENSION) * Sudoku::BOX_DIMENSION;
+	for (int row = startingRow; row < startingRow + Sudoku::BOX_DIMENSION; row++)
 	{
-		for (int col = starting_col; col < starting_col + BOX_DIMENSION; col++)
+		for (int col = startingCol; col < startingCol + Sudoku::BOX_DIMENSION;
+			col++)
 		{
-			if (game.getCell(row, col) != EMPTY_VALUE)
+			if (game.getCell(row, col) != Sudoku::EMPTY_VALUE)
 			{
 				possibilities[game.getCell(row, col)] = false;
 			}
@@ -79,11 +81,11 @@ bool solve(Sudoku &game)
 	const int NOT_FOUND = -1;
 	int emptyCellRow = NOT_FOUND;
 	int emptyCellCol = NOT_FOUND;
-	for (int row = 0; row < GRID_DIMENSION; row++)
+	for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
 	{
-		for (int col = 0; col < GRID_DIMENSION; col++)
+		for (int col = 0; col < Sudoku::GRID_DIMENSION; col++)
 		{
-			if (game.getCell(row, col) == EMPTY_VALUE)
+			if (game.getCell(row, col) == Sudoku::EMPTY_VALUE)
 			{
 				emptyCellRow = row;
 				emptyCellCol = col;
@@ -96,7 +98,7 @@ bool solve(Sudoku &game)
 		return false;
 	}
 	std::vector<int> possibleChoices = {};
-	find_possible_choices(game, emptyCellRow, emptyCellCol, possibleChoices);
+	findChoices(game, emptyCellRow, emptyCellCol, possibleChoices);
 	for (int i = 0; i < possibleChoices.size(); i++) 
 	{
 		game.fillCell(emptyCellRow, emptyCellCol, possibleChoices.at(i));
