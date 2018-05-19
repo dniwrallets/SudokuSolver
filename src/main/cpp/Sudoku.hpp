@@ -2,7 +2,7 @@
  * Sudoku constants, class and function prototypes.
  * 
  * 
- * 2018-05-15
+ * 2018-05-19
  * John Y
  */
 
@@ -12,17 +12,17 @@
 #include <string>
 
 
-extern const int GRID_DIMENSION;
-extern const int BOX_DIMENSION;
-extern const int NUM_BOXES;
-extern const int MIN_VALUE;
-extern const int MAX_VALUE;
-extern const int EMPTY_VALUE;
-
-
 class Sudoku
 {
 public:
+	static const int GRID_DIMENSION;
+	static const int BOX_DIMENSION;
+	static const int NUM_BOXES;
+	static const int MIN_VALUE;
+	static const int MAX_VALUE;
+	static const int EMPTY_VALUE;
+
+
 	/**
 	 * @brief      Constructs the object from console input.
 	 */

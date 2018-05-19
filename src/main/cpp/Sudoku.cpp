@@ -2,7 +2,7 @@
  * Sudoku class implementation
  * 
  * 
- * 2018-05-18
+ * 2018-05-19
  * John Y
  */
 
@@ -12,12 +12,12 @@
 #include <map>
 
 
-const int GRID_DIMENSION = 9;
-const int BOX_DIMENSION = 3;
-const int NUM_BOXES = 9;
-const int MIN_VALUE = 1;
-const int MAX_VALUE = 9;
-const int EMPTY_VALUE = 0;
+const int Sudoku::GRID_DIMENSION = 9;
+const int Sudoku::BOX_DIMENSION = 3;
+const int Sudoku::NUM_BOXES = 9;
+const int Sudoku::MIN_VALUE = 1;
+const int Sudoku::MAX_VALUE = 9;
+const int Sudoku::EMPTY_VALUE = 0;
 
 
 Sudoku::Sudoku()
@@ -73,9 +73,9 @@ bool Sudoku::isSolved()
 }
 
 
-int **getPuzzle()
+int **Sudoku::getPuzzle()
 {
-	p = new int*[GRID_DIMENSION];
+	int **p = new int*[GRID_DIMENSION];
 	for (int i = 0; i < GRID_DIMENSION; i++)
 	{
 		p[i] = new int[GRID_DIMENSION];
@@ -91,9 +91,9 @@ int **getPuzzle()
 }
 
 
-int **getSolution()
+int **Sudoku::getSolution()
 {
-	s = new int*[GRID_DIMENSION];
+	int **s = new int*[GRID_DIMENSION];
 	for (int i = 0; i < GRID_DIMENSION; i++)
 	{
 		s[i] = new int[GRID_DIMENSION];
@@ -126,6 +126,7 @@ bool Sudoku::fillCell(int row, int col, int value)
 		return false;
 	}
 	solution[row][col] = value;
+	return true;
 }
 
 
@@ -136,6 +137,7 @@ bool Sudoku::eraseCell(int row, int col)
 		return false;
 	}
 	solution[row][col] = EMPTY_VALUE;
+	return true;
 }
 
 
@@ -234,5 +236,5 @@ bool Sudoku::hasValidBoxes()
 
 bool Sudoku::isValid()
 {
-	return has_valid_row() && has_valid_cols() && has_valid_boxes();
+	return hasValidRows() && hasValidCols() && hasValidBoxes();
 }
