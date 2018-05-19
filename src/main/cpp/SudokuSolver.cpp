@@ -92,7 +92,7 @@ bool solveSudoku(Sudoku &game)
 	for (int i = 0; i < possibleChoices.size(); i++) 
 	{
 		game.fillCell(emptyCellRow, emptyCellCol, possibleChoices.at(i));
-		if (solve(game))
+		if (solveSudoku(game))
 		{
 			return true;
 		}
