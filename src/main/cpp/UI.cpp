@@ -13,16 +13,17 @@
 #include <string>
 
 
-static const std::string RED = "\033[1;31m";
+static const std::string RED = "\033[31;1m";
 static const std::string GREEN = "\033[32m";
 static const std::string YELLOW = "\033[33m";
 static const std::string BLUE = "\033[34m";
 static const std::string RESET = "\033[0m";
+static const std::string WHITE = "\033[37m";
 
 static const std::string LEFT_INDENT = "    ";
-static const std::string HORIZONTAL_BOARDER = LEFT_INDENT + "+-------+-------+-------+\n";
-static const std::string VERTICAL_BOARDER = "|";
-static const char BLANK_CELL = '.';
+static const std::string HORIZONTAL_BOARDER = LEFT_INDENT + WHITE + "+-------+-------+-------+\n" + RESET;
+static const std::string VERTICAL_BOARDER = WHITE + "|" + RESET;
+static const std::string BLANK_CELL = WHITE + "." + RESET;
 
 
 void printSudoku(Sudoku &game)
@@ -53,15 +54,15 @@ void printSudoku(Sudoku &game)
 				}
 				else
 				{
-					std::cout << " " << GREEN << solution[row][col] << RESET;
+					std::cout << " " << RED << solution[row][col] << RESET;
 				}
 			}
 			else
 			{
-				std::cout << " " << RED << puzzle[row][col] << RESET;
+				std::cout << " " << GREEN << puzzle[row][col] << RESET;
 			}
 		}
-		std::cout << " |" << std::endl;
+		std::cout << " " << VERTICAL_BOARDER << std::endl;
 	}
 	std::cout << HORIZONTAL_BOARDER;
 }
