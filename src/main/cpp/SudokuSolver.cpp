@@ -13,16 +13,6 @@
 #include <vector>
 
 
-/**
- * @brief      Finds all possible valid values that can be filled into the cell
- *             at row, col in game. Add all the values into possible_choices.
- *
- * @param      game             The Sudoku game
- * @param[in]  row              The row position
- * @param[in]  col              The col column position
- * @param      possibleChoices  A vector pointer that contains all possible 
- *             choices
- */
 void findChoices(Sudoku &game, int row, int col, 
 	std::vector<int> &possibleChoices)
 {
@@ -95,6 +85,7 @@ bool solve(Sudoku &game)
 	}
 	if (emptyCellRow == NOT_FOUND || emptyCellCol == NOT_FOUND)
 	{
+		std::cout << "exit 1" << std::endl;
 		return false;
 	}
 	std::vector<int> possibleChoices = {};
@@ -108,5 +99,6 @@ bool solve(Sudoku &game)
 		}
 		game.eraseCell(emptyCellRow, emptyCellCol);
 	}
+	std::cout << "exit 2" << std::endl;
 	return false;
 }
