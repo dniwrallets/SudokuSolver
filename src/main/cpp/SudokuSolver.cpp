@@ -40,7 +40,8 @@ void findChoices(Sudoku &game, int row, int col,
 		col / Sudoku::BOX_DIMENSION;
 	int startingRow = (box / Sudoku::BOX_DIMENSION) * Sudoku::BOX_DIMENSION;
 	int startingCol = (box % Sudoku::BOX_DIMENSION) * Sudoku::BOX_DIMENSION;
-	for (int row = startingRow; row < startingRow + Sudoku::BOX_DIMENSION; row++)
+	for (int row = startingRow; row < startingRow + Sudoku::BOX_DIMENSION; 
+		row++)
 	{
 		for (int col = startingCol; col < startingCol + Sudoku::BOX_DIMENSION;
 			col++)
