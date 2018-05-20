@@ -115,27 +115,33 @@ private:
 
 
 	/**
-	 * @brief      Determines if all the rows in the game are valid.
+	 * @brief      Determines a row is valid.
 	 *
-	 * @return     True if all rows are valid, False otherwise.
+	 * @param[in]  row   The row index
+	 *
+	 * @return     True if the row is valid, False otherwise.
 	 */
-	bool hasValidRows();
+	bool isValidRow(int row);
 
 
 	/**
-	 * @brief      Determines if all the columns in the game are valid.
+	 * @brief      Determines if a column is valid.
 	 *
-	 * @return     True if all columns are valid, False otherwise.
+	 * @param[in]  col   The column index
+	 *
+	 * @return     True if the column is valid, False otherwise.
 	 */
-	bool hasValidCols();
+	bool isValidCol(int col);
 
 
 	/**
-	 * @brief      Determines if all the boxes in the game are valid.
+	 * @brief      Determines if a boxe in the game is valid.
 	 *
-	 * @return     True if all boxes are valid, False otherwise.
+	 * @param[in]  box   The box index
+	 *
+	 * @return     True if the boxe is valid, False otherwise.
 	 */
-	bool hasValidBoxes();
+	bool isValidBox(int box);
 
 
 	/**

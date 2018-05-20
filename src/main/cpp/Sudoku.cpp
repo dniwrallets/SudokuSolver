@@ -134,7 +134,9 @@ bool Sudoku::fillCell(int row, int col, int value)
 	}
 	int previousValue = getCell(row, col);
 	solution[row][col] = value;
-	if (isValid())
+	if (isValidRow(row) && isValidCol(col) && 
+		isValidBox(row / BOX_DIMENSION * BOX_DIMENSION + 
+		col / BOX_DIMENSION))
 	{
 		return true;
 	}
@@ -147,7 +149,7 @@ bool Sudoku::eraseCell(int row, int col)
 {
 	assert(row >= 0 && row < GRID_DIMENSION);
 	assert(col >= 0 && col < GRID_DIMENSION);
-	
+
 	if (puzzle[row][col] != EMPTY_VALUE)
 	{
 		return false;
@@ -169,41 +171,63 @@ void Sudoku::resetSolution()
 }
 
 
-bool Sudoku::hasValidRows()
+bool Sudoku::isValidRow(int row)
 {
-	for (int row = 0; row < GRID_DIMENSION; row++)
+	std::map<int, bool> possibilities;
+	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
 	{
-		std::map<int, bool> possibilities;
-		for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
-		{
-			possibilities.insert(std::make_pair(i, false));
-		}
-		for (int col = 0; col < GRID_DIMENSION; col++)
-		{
-			if (getCell(row, col) != EMPTY_VALUE)
-			{
-				if (possibilities.find(getCell(row, col))->second)
-				{
-					return false;
-				}
-				possibilities[getCell(row, col)] = true;
-			}
-		}
+		possibilities.insert(std::make_pair(i, false));
 	}
-	return true;
-}
-
-
-bool Sudoku::hasValidCols()
-{
 	for (int col = 0; col < GRID_DIMENSION; col++)
 	{
-		std::map<int, bool> possibilities;
-		for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
+		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			possibilities.insert(std::make_pair(i, false));
+			if (possibilities.find(getCell(row, col))->second)
+			{
+				return false;
+			}
+			possibilities[getCell(row, col)] = true;
 		}
-		for (int row = 0; row < GRID_DIMENSION; row++)
+	}
+	return true;
+}
+
+
+bool Sudoku::isValidCol(int col)
+{
+	std::map<int, bool> possibilities;
+	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
+	{
+		possibilities.insert(std::make_pair(i, false));
+	}
+	for (int row = 0; row < GRID_DIMENSION; row++)
+	{
+		if (getCell(row, col) != EMPTY_VALUE)
+		{
+			if (possibilities.find(getCell(row, col))->second)
+			{
+				return false;
+			}
+			possibilities[getCell(row, col)] = true;
+		}
+	}
+	return true;
+}
+
+
+bool Sudoku::isValidBox(int box)
+{
+	int starting_row = (box / BOX_DIMENSION) * BOX_DIMENSION;
+	int starting_col = (box % BOX_DIMENSION) * BOX_DIMENSION;
+	std::map<int, bool> possibilities;
+	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
+	{
+		possibilities.insert(std::make_pair(i, false));
+	}
+	for (int row = starting_row; row < starting_row + BOX_DIMENSION; row++)
+	{
+		for (int col = starting_col; col < starting_col + BOX_DIMENSION; 
+			col++)
 		{
 			if (getCell(row, col) != EMPTY_VALUE)
 			{
@@ -212,37 +236,6 @@ bool Sudoku::hasValidCols()
 					return false;
 				}
 				possibilities[getCell(row, col)] = true;
-			}
-		}
-	}
-	return true;
-}
-
-
-bool Sudoku::hasValidBoxes()
-{
-	for (int box = 0; box < NUM_BOXES; box++)
-	{
-		int starting_row = (box / BOX_DIMENSION) * BOX_DIMENSION;
-		int starting_col = (box % BOX_DIMENSION) * BOX_DIMENSION;
-		std::map<int, bool> possibilities;
-		for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
-		{
-			possibilities.insert(std::make_pair(i, false));
-		}
-		for (int row = starting_row; row < starting_row + BOX_DIMENSION; row++)
-		{
-			for (int col = starting_col; col < starting_col + BOX_DIMENSION; 
-				col++)
-			{
-				if (getCell(row, col) != EMPTY_VALUE)
-				{
-					if (possibilities.find(getCell(row, col))->second)
-					{
-						return false;
-					}
-					possibilities[getCell(row, col)] = true;
-				}
 			}
 		}
 	}
@@ -252,5 +245,12 @@ bool Sudoku::hasValidBoxes()
 
 bool Sudoku::isValid()
 {
-	return hasValidRows() && hasValidCols() && hasValidBoxes();
+	for (int i = 0; i < GRID_DIMENSION; i++)
+	{
+		if (!isValidRow(i) || !isValidRow(i) || !isValidBox(i))
+		{
+			return false;
+		}
+	}
+	return true;
 }
