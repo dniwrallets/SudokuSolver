@@ -2,7 +2,7 @@
  * SudokuSolver function implementation.
  * 
  * 
- * 2018-05-19
+ * 2018-05-20
  * John Y
  */
 
@@ -11,7 +11,7 @@
 
 #include <map>
 #include <vector>
-
+#include <iostream>
 
 void findChoices(Sudoku &game, int row, int col, 
 	std::vector<int> &possibleChoices)
@@ -36,8 +36,8 @@ void findChoices(Sudoku &game, int row, int col,
 			possibilities[game.getCell(row, i)] = false;
 		}
 	}
-	int box = row / Sudoku::NUM_BOXES * Sudoku::BOX_DIMENSION + 
-		col / Sudoku::NUM_BOXES;
+	int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
+		col / Sudoku::BOX_DIMENSION;
 	int startingRow = (box / Sudoku::BOX_DIMENSION) * Sudoku::BOX_DIMENSION;
 	int startingCol = (box % Sudoku::BOX_DIMENSION) * Sudoku::BOX_DIMENSION;
 	for (int row = startingRow; row < startingRow + Sudoku::BOX_DIMENSION; row++)
@@ -87,7 +87,7 @@ bool solveSudoku(Sudoku &game)
 	{
 		return false;
 	}
-	std::vector<int> possibleChoices = {};
+	std::vector<int> possibleChoices;
 	findChoices(game, emptyCellRow, emptyCellCol, possibleChoices);
 	for (int i = 0; i < possibleChoices.size(); i++) 
 	{
