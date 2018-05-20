@@ -125,8 +125,14 @@ bool Sudoku::fillCell(int row, int col, int value)
 	{
 		return false;
 	}
+	int previousValue = getCell(row, col);
 	solution[row][col] = value;
-	return true;
+	if (isValid())
+	{
+		return true;
+	}
+	solution[row][col] = previousValue;
+	return false;
 }
 
 
