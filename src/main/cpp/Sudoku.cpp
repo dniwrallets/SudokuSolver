@@ -9,7 +9,6 @@
 
 #include "Sudoku.hpp"
 
-#include <map>
 #include <cassert>
 
 const int Sudoku::GRID_DIMENSION = 9;
@@ -173,20 +172,22 @@ void Sudoku::resetSolution()
 
 bool Sudoku::isValidRow(int row)
 {
-	std::map<int, bool> possibilities;
-	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
+	assert(row >= 0 && row < GRID_DIMENSION);
+
+	bool possibilityMap[] = 
 	{
-		possibilities.insert(std::make_pair(i, false));
-	}
+		false, false, false, false, false, 
+		false, false, false, false
+	};
 	for (int col = 0; col < GRID_DIMENSION; col++)
 	{
 		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			if (possibilities.find(getCell(row, col))->second)
+			if (possibilityMap[getCell(row, col) - 1])
 			{
 				return false;
 			}
-			possibilities[getCell(row, col)] = true;
+			possibilityMap[getCell(row, col) - 1] = true;
 		}
 	}
 	return true;
@@ -195,20 +196,22 @@ bool Sudoku::isValidRow(int row)
 
 bool Sudoku::isValidCol(int col)
 {
-	std::map<int, bool> possibilities;
-	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
+	assert(col >= 0 && col < GRID_DIMENSION);
+
+	bool possibilityMap[] = 
 	{
-		possibilities.insert(std::make_pair(i, false));
-	}
+		false, false, false, false, false, 
+		false, false, false, false
+	};
 	for (int row = 0; row < GRID_DIMENSION; row++)
 	{
 		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			if (possibilities.find(getCell(row, col))->second)
+			if (possibilityMap[getCell(row, col) - 1])
 			{
 				return false;
 			}
-			possibilities[getCell(row, col)] = true;
+			possibilityMap[getCell(row, col) - 1] = true;
 		}
 	}
 	return true;
@@ -217,13 +220,15 @@ bool Sudoku::isValidCol(int col)
 
 bool Sudoku::isValidBox(int box)
 {
+	assert(box >= 0 && box < NUM_BOXES);
+
+	bool possibilityMap[] = 
+	{
+		false, false, false, false, false, 
+		false, false, false, false
+	};
 	int starting_row = (box / BOX_DIMENSION) * BOX_DIMENSION;
 	int starting_col = (box % BOX_DIMENSION) * BOX_DIMENSION;
-	std::map<int, bool> possibilities;
-	for (int i = MIN_VALUE; i <= MAX_VALUE; i++)
-	{
-		possibilities.insert(std::make_pair(i, false));
-	}
 	for (int row = starting_row; row < starting_row + BOX_DIMENSION; row++)
 	{
 		for (int col = starting_col; col < starting_col + BOX_DIMENSION; 
@@ -231,11 +236,11 @@ bool Sudoku::isValidBox(int box)
 		{
 			if (getCell(row, col) != EMPTY_VALUE)
 			{
-				if (possibilities.find(getCell(row, col))->second)
+				if (possibilityMap[getCell(row, col) - 1])
 				{
 					return false;
 				}
-				possibilities[getCell(row, col)] = true;
+				possibilityMap[getCell(row, col) - 1] = true;
 			}
 		}
 	}
