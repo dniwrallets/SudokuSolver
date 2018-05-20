@@ -10,7 +10,7 @@
 #include "Sudoku.hpp"
 
 #include <map>
-
+#include <cassert>
 
 const int Sudoku::GRID_DIMENSION = 9;
 const int Sudoku::BOX_DIMENSION = 3;
@@ -111,6 +111,9 @@ int **Sudoku::getSolution()
 
 int Sudoku::getCell(int row, int col)
 {
+	assert(row >= 0 && row < GRID_DIMENSION);
+	assert(col >= 0 && col < GRID_DIMENSION);
+
 	if (puzzle[row][col] != EMPTY_VALUE)
 	{
 		return puzzle[row][col];
@@ -121,6 +124,10 @@ int Sudoku::getCell(int row, int col)
 
 bool Sudoku::fillCell(int row, int col, int value)
 {
+	assert(row >= 0 && row < GRID_DIMENSION);
+	assert(col >= 0 && col < GRID_DIMENSION);
+	assert(value >= MIN_VALUE && value <= MAX_VALUE);
+
 	if (puzzle[row][col] != EMPTY_VALUE)
 	{
 		return false;
@@ -138,6 +145,9 @@ bool Sudoku::fillCell(int row, int col, int value)
 
 bool Sudoku::eraseCell(int row, int col)
 {
+	assert(row >= 0 && row < GRID_DIMENSION);
+	assert(col >= 0 && col < GRID_DIMENSION);
+	
 	if (puzzle[row][col] != EMPTY_VALUE)
 	{
 		return false;
