@@ -69,6 +69,14 @@ public:
 
 
 	/**
+	 * @brief      Returns the number of empty cells.
+	 *
+	 * @return     The number of empty cells.
+	 */
+	int getNumberOfEmptyCells();
+
+
+	/**
 	 * @brief      Gets the cell at row and col.
 	 *
 	 * @param[in]  row   The row position of the cell
@@ -112,6 +120,7 @@ public:
 private:
 	int **puzzle;
 	int **solution;
+	int numberOfEmptyCells;
 
 
 	/**

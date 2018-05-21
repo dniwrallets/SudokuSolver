@@ -28,6 +28,7 @@ Sudoku::Sudoku(int** p)
 {
 	puzzle = new int*[GRID_DIMENSION];
 	solution = new int*[GRID_DIMENSION];
+	numberOfEmptyCells = 0;
 	for (int i = 0; i < GRID_DIMENSION; i++)
 	{
 		puzzle[i] = new int[GRID_DIMENSION];
@@ -38,6 +39,10 @@ Sudoku::Sudoku(int** p)
 		for (int col = 0; col < GRID_DIMENSION; col++)
 		{
 			puzzle[row][col] = p[row][col];
+			if (puzzle[row][col] == EMPTY_VALUE)
+			{
+				numberOfEmptyCells++;
+			}
 		}
 	}
 	resetSolution();
@@ -58,17 +63,13 @@ Sudoku::~Sudoku()
 
 bool Sudoku::isSolved()
 {
-	for (int row = 0; row < GRID_DIMENSION; row++)
-	{
-		for (int col = 0; col < GRID_DIMENSION; col++)
-		{
-			if (getCell(row, col) == EMPTY_VALUE)
-			{
-				return false;
-			}
-		}
-	}
-	return true;
+	return numberOfEmptyCells == 0;
+}
+
+
+int Sudoku::getNumberOfEmptyCells()
+{
+	return numberOfEmptyCells;
 }
 
 
@@ -137,6 +138,7 @@ bool Sudoku::fillCell(int row, int col, int value)
 		isValidBox(row / BOX_DIMENSION * BOX_DIMENSION + 
 		col / BOX_DIMENSION))
 	{
+		numberOfEmptyCells--;
 		return true;
 	}
 	solution[row][col] = previousValue;
@@ -153,6 +155,7 @@ bool Sudoku::eraseCell(int row, int col)
 	{
 		return false;
 	}
+	numberOfEmptyCells++;
 	solution[row][col] = EMPTY_VALUE;
 	return true;
 }
@@ -160,11 +163,16 @@ bool Sudoku::eraseCell(int row, int col)
 
 void Sudoku::resetSolution()
 {
+	numberOfEmptyCells = 0;
 	for (int row = 0; row < GRID_DIMENSION; row++)
 	{
 		for (int col = 0; col < GRID_DIMENSION; col++)
 		{
 			solution[row][col] = EMPTY_VALUE;
+			if (puzzle[row][col] == EMPTY_VALUE)
+			{
+				numberOfEmptyCells++;
+			}
 		}
 	}
 }
@@ -174,7 +182,7 @@ bool Sudoku::isValidRow(int row)
 {
 	assert(row >= 0 && row < GRID_DIMENSION);
 
-	bool possibilityMap[] = 
+	bool possibilityTable[] = 
 	{
 		false, false, false, false, false, 
 		false, false, false, false
@@ -183,11 +191,11 @@ bool Sudoku::isValidRow(int row)
 	{
 		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			if (possibilityMap[getCell(row, col) - 1])
+			if (possibilityTable[getCell(row, col) - 1])
 			{
 				return false;
 			}
-			possibilityMap[getCell(row, col) - 1] = true;
+			possibilityTable[getCell(row, col) - 1] = true;
 		}
 	}
 	return true;
@@ -198,7 +206,7 @@ bool Sudoku::isValidCol(int col)
 {
 	assert(col >= 0 && col < GRID_DIMENSION);
 
-	bool possibilityMap[] = 
+	bool possibilityTable[] = 
 	{
 		false, false, false, false, false, 
 		false, false, false, false
@@ -207,11 +215,11 @@ bool Sudoku::isValidCol(int col)
 	{
 		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			if (possibilityMap[getCell(row, col) - 1])
+			if (possibilityTable[getCell(row, col) - 1])
 			{
 				return false;
 			}
-			possibilityMap[getCell(row, col) - 1] = true;
+			possibilityTable[getCell(row, col) - 1] = true;
 		}
 	}
 	return true;
@@ -222,7 +230,7 @@ bool Sudoku::isValidBox(int box)
 {
 	assert(box >= 0 && box < NUM_BOXES);
 
-	bool possibilityMap[] = 
+	bool possibilityTable[] = 
 	{
 		false, false, false, false, false, 
 		false, false, false, false
@@ -236,11 +244,11 @@ bool Sudoku::isValidBox(int box)
 		{
 			if (getCell(row, col) != EMPTY_VALUE)
 			{
-				if (possibilityMap[getCell(row, col) - 1])
+				if (possibilityTable[getCell(row, col) - 1])
 				{
 					return false;
 				}
-				possibilityMap[getCell(row, col) - 1] = true;
+				possibilityTable[getCell(row, col) - 1] = true;
 			}
 		}
 	}
