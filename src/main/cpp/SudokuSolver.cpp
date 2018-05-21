@@ -130,7 +130,7 @@ void findChoices(Sudoku &game, int row, int col,
 	{
 		return;
 	}
-	bool possibilityTable[] = 
+	bool choiceTable[] = 
 	{
 		true, true, true, true, true, 
 		true, true, true, true
@@ -140,11 +140,11 @@ void findChoices(Sudoku &game, int row, int col,
 	{
 		if (game.getCell(i, col) != Sudoku::EMPTY_VALUE)
 		{
-			possibilityTable[game.getCell(i, col) - 1] = false;
+			choiceTable[game.getCell(i, col) - 1] = false;
 		}
 		if (game.getCell(row, i) != Sudoku::EMPTY_VALUE)
 		{
-			possibilityTable[game.getCell(row, i) - 1] = false;
+			choiceTable[game.getCell(row, i) - 1] = false;
 		}
 	}
 	int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
@@ -159,13 +159,13 @@ void findChoices(Sudoku &game, int row, int col,
 		{
 			if (game.getCell(row, col) != Sudoku::EMPTY_VALUE)
 			{
-				possibilityTable[game.getCell(row, col) - 1] = false;
+				choiceTable[game.getCell(row, col) - 1] = false;
 			}
 		}
 	}
 	for (int i = 0; i < Sudoku::MAX_VALUE; i++)
 	{
-		if (possibilityTable[i])
+		if (choiceTable[i])
 		{
 			possibleChoices.push_back(i + 1);
 		}

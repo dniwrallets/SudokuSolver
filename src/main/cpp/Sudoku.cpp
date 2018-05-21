@@ -2,7 +2,7 @@
  * Sudoku class implementation
  * 
  * 
- * 2018-05-19
+ * 2018-05-21
  * John Y
  */
 
@@ -182,7 +182,7 @@ bool Sudoku::isValidRow(int row)
 {
 	assert(row >= 0 && row < GRID_DIMENSION);
 
-	bool possibilityTable[] = 
+	bool choiceTable[] = 
 	{
 		false, false, false, false, false, 
 		false, false, false, false
@@ -191,11 +191,11 @@ bool Sudoku::isValidRow(int row)
 	{
 		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			if (possibilityTable[getCell(row, col) - 1])
+			if (choiceTable[getCell(row, col) - 1])
 			{
 				return false;
 			}
-			possibilityTable[getCell(row, col) - 1] = true;
+			choiceTable[getCell(row, col) - 1] = true;
 		}
 	}
 	return true;
@@ -206,7 +206,7 @@ bool Sudoku::isValidCol(int col)
 {
 	assert(col >= 0 && col < GRID_DIMENSION);
 
-	bool possibilityTable[] = 
+	bool choiceTable[] = 
 	{
 		false, false, false, false, false, 
 		false, false, false, false
@@ -215,11 +215,11 @@ bool Sudoku::isValidCol(int col)
 	{
 		if (getCell(row, col) != EMPTY_VALUE)
 		{
-			if (possibilityTable[getCell(row, col) - 1])
+			if (choiceTable[getCell(row, col) - 1])
 			{
 				return false;
 			}
-			possibilityTable[getCell(row, col) - 1] = true;
+			choiceTable[getCell(row, col) - 1] = true;
 		}
 	}
 	return true;
@@ -230,7 +230,7 @@ bool Sudoku::isValidBox(int box)
 {
 	assert(box >= 0 && box < NUM_BOXES);
 
-	bool possibilityTable[] = 
+	bool choiceTable[] = 
 	{
 		false, false, false, false, false, 
 		false, false, false, false
@@ -244,11 +244,11 @@ bool Sudoku::isValidBox(int box)
 		{
 			if (getCell(row, col) != EMPTY_VALUE)
 			{
-				if (possibilityTable[getCell(row, col) - 1])
+				if (choiceTable[getCell(row, col) - 1])
 				{
 					return false;
 				}
-				possibilityTable[getCell(row, col) - 1] = true;
+				choiceTable[getCell(row, col) - 1] = true;
 			}
 		}
 	}
