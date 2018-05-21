@@ -2,7 +2,7 @@
  * Sudoku class test driver
  * 
  * 
- * 2018-05-19
+ * 2018-05-20
  * John Y
  */
 
@@ -46,6 +46,8 @@ int main(int argc, char const *argv[])
 	std::cout << "Done" << std::endl;
 	printSudoku(s);
 
+	assert(s.getNumberOfEmptyCells() == 54);
+
 	s.fillCell(0, 0, 5);
 	s.fillCell(0, 1, 9);
 	s.fillCell(0, 3, 7);
@@ -64,6 +66,8 @@ int main(int argc, char const *argv[])
 	s.fillCell(2, 1, 1);
 
 	printSudoku(s);
+
+	assert(s.getNumberOfEmptyCells() == 41);
 
 	assert(!s.fillCell(2, 2, 1));
 	assert(!s.fillCell(2, 2, 2));
@@ -103,8 +107,11 @@ int main(int argc, char const *argv[])
 	assert(!s.fillCell(2, 5, 9));
 
 	assert(s.fillCell(2, 5, 8));
-	
-	printSudoku(s);
 
+	printSudoku(s);
+	assert(s.getNumberOfEmptyCells() == 32);
+
+	s.resetSolution();
+	assert(s.getNumberOfEmptyCells() == 54);
 	return 0;
 }

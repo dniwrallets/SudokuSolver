@@ -9,96 +9,98 @@
 
 #include "SudokuSolver.hpp"
 
-#include <vector>
 #include <map>
-#include <cassert>
+#include <vector>
 
 
-static const int EMPTY_CELLS_THRESHOLD = Sudoku:: GRID_DIMENSION * 
-	Sudoku::GRID_DIMENSION * 1 / 16;
-
-
-/**
- * @brief      Select the first empty cell from the game by checking from left
- *             to right, up to down.
- *
- * @param      game          The Sudoku game
- * @param      emptyCellRow  Reference variable for the row position
- * @param      emptyCellCol  Reference variable for the column position
- *
- * @return     true if a cell is found, false otherwise.
- */
-static bool selectEmptyCellByPosition(Sudoku &game, int &emptyCellRow, 
-	int &emptyCellCol)
+class SudokuConstraints
 {
-	const int NOT_FOUND = -1;
-	int currentNumberOfChoices = NOT_FOUND;
-	int currentBestRow = NOT_FOUND;
-	int currentBestCol = NOT_FOUND;
-	for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
+public:
+	SudokuConstraints(Sudoku &game)
 	{
-		for (int col = 0; col < Sudoku::GRID_DIMENSION; col++)
+		valueOccurrenceTable = 
+			new int[Sudoku::MAX_VALUE - Sudoku::MIN_VALUE + 1];
+		rowOccurrenceTable = new int[Sudoku::GRID_DIMENSION];
+		colOccurrenceTable = new int[Sudoku::GRID_DIMENSION];
+		boxOccurrenceTable = new int[Sudoku::NUM_BOXES];
+		for (int i = 0; i < Sudoku::GRID_DIMENSION; i++)
 		{
-			if (game.getCell(row, col) == Sudoku::EMPTY_VALUE)
-			{
-				emptyCellRow = row;
-				emptyCellCol = col;
-				return true;
-			}
+			valueOccurrenceTable[i] = 0;
+			rowOccurrenceTable[i] = 0;
+			colOccurrenceTable[i] = 0;
+			boxOccurrenceTable[i] = 0;
 		}
-	}
-	return false;
-}
-
-
-/**
- * @brief      Select the empty cell with lowest number of possible choices 
- *             from the game by checking from left, to right, up to down.
- *
- * @param      game          The Sudoku game
- * @param      emptyCellRow  Reference variable for the row position
- * @param      emptyCellCol  Reference variable for the column position
- *
- * @return     true if a cell is found, false otherwise.
- */
-static bool selectEmptyCellByChoices(Sudoku &game, int &emptyCellRow, 
-	int &emptyCellCol)
-{
-	const int NOT_FOUND = -1;
-	int currentNumberOfChoices = NOT_FOUND;
-	int currentBestRow = NOT_FOUND;
-	int currentBestCol = NOT_FOUND;
-
-	for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
-	{
-		for (int col = 0; col < Sudoku::GRID_DIMENSION; col++)
+		for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
 		{
-			if (game.getCell(row, col) == Sudoku::EMPTY_VALUE)
+			for (int col = 0; col < Sudoku::GRID_DIMENSION; col++)
 			{
-				std::vector<int> choices;
-				findChoices(game, row, col, choices);
-				if (choices.size() > 0 && (currentNumberOfChoices == NOT_FOUND ||
-					choices.size() < currentNumberOfChoices))
+				if (game.getCell(row, col) != Sudoku::EMPTY_VALUE)
 				{
-					currentNumberOfChoices = choices.size();
-					currentBestRow = row;
-					currentBestCol = col;
+					valueOccurrenceTable[game.getCell(row, col) - 1]++;
+					int box = row / Sudoku::BOX_DIMENSION * 
+						Sudoku::BOX_DIMENSION + col / Sudoku::BOX_DIMENSION;
+					rowOccurrenceTable[row]++;
+					colOccurrenceTable[col]++;
+					boxOccurrenceTable[box]++;
 				}
 			}
-			if (currentNumberOfChoices == 1)
-			{
-				break;
-			}
-		}
+		}	
 	}
-	if (currentNumberOfChoices == NOT_FOUND)
+
+
+	~SudokuConstraints()
 	{
-		return false;
+		delete[] valueOccurrenceTable;
+		delete[] rowOccurrenceTable;
+		delete[] colOccurrenceTable;
+		delete[] boxOccurrenceTable;
 	}
-	emptyCellRow = currentBestRow;
-	emptyCellCol = currentBestCol;
-	return true;
-}
+
+
+	int getValueOccurrence(int value)
+	{
+		return valueOccurrenceTable[value - 1];
+	}
+
+
+	int getNumberOfConstraints(int row, int col)
+	{
+		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
+			col / Sudoku::BOX_DIMENSION;
+		return rowOccurrenceTable[row] + colOccurrenceTable[col] +
+			boxOccurrenceTable[box];
+	}
+
+
+	void addConstraint(int row, int col, int value)
+	{
+		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
+			col / Sudoku::BOX_DIMENSION;
+		valueOccurrenceTable[value - 1]++;
+		rowOccurrenceTable[row]++;
+		colOccurrenceTable[col]++;
+		boxOccurrenceTable[box]++;
+	}
+
+
+	void removeConstraint(int row, int col, int value)
+	{
+
+		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
+			col / Sudoku::BOX_DIMENSION;
+		valueOccurrenceTable[value - 1]--;
+		rowOccurrenceTable[row]--;
+		colOccurrenceTable[col]--;
+		boxOccurrenceTable[box]--;
+	}
+
+
+private:
+	int *valueOccurrenceTable;
+	int *rowOccurrenceTable;
+	int *colOccurrenceTable;
+	int *boxOccurrenceTable;
+};
 
 
 /**
@@ -110,13 +112,45 @@ static bool selectEmptyCellByChoices(Sudoku &game, int &emptyCellRow,
  *
  * @return     true if a cell is found, false otherwise.
  */
-static bool selectEmptyCell(Sudoku &game, int &emptyCellRow, int &emptyCellCol)
+static bool selectEmptyCell(Sudoku &game, SudokuConstraints &constraints,
+	int &emptyCellRow, int &emptyCellCol)
 {
-	if (game.getNumberOfEmptyCells() <= EMPTY_CELLS_THRESHOLD)
+	const int NOT_FOUND = -1;
+	int currentNumberOfConstraints = NOT_FOUND;
+	int currentBestRow = NOT_FOUND;
+	int currentBestCol = NOT_FOUND;
+	for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
 	{
-		return selectEmptyCellByChoices(game, emptyCellRow, emptyCellCol);
+		for (int col = 0; col < Sudoku::GRID_DIMENSION; col++)
+		{
+			if (game.getCell(row, col) == Sudoku::EMPTY_VALUE)
+			{
+				int numberOfConstraints = 
+					constraints.getNumberOfConstraints(row, col);
+				if (currentNumberOfConstraints == NOT_FOUND ||
+					numberOfConstraints > currentNumberOfConstraints)
+				{
+					currentNumberOfConstraints = numberOfConstraints;
+					currentBestRow = row;
+					currentBestCol = col;
+				}
+			}
+			if (currentNumberOfConstraints == 
+				Sudoku::MAX_VALUE - Sudoku::MIN_VALUE)
+			{
+				emptyCellRow = currentBestRow;
+				emptyCellCol = currentBestCol;
+				return true;
+			}
+		}
 	}
-	return selectEmptyCellByPosition(game, emptyCellRow, emptyCellCol);
+	if (currentNumberOfConstraints == NOT_FOUND)
+	{
+		return false;
+	}
+	emptyCellRow = currentBestRow;
+	emptyCellCol = currentBestCol;
+	return true;
 }
 
 
@@ -135,7 +169,6 @@ void findChoices(Sudoku &game, int row, int col,
 		true, true, true, true, true, 
 		true, true, true, true
 	};
-
 	for (int i = 0; i < Sudoku::GRID_DIMENSION; i++)
 	{
 		if (game.getCell(i, col) != Sudoku::EMPTY_VALUE)
@@ -176,14 +209,14 @@ void findChoices(Sudoku &game, int row, int col,
 /**
  * @brief      Solves the Sudoku game via backtracking algorithm.
  *
- * @param      game             The Sudoku game
- * @param      occurrenceTable  An array with 9 elements where the content at 
- *             index i corresponds to the  number of occurrence of the value
- *             i + 1 in the game
- *             
+ * @param      game         The Sudoku game
+ * @param      constraints  The SudokuConstraints object that keeps track of
+ *                          number of occupied cells in a row/col, or the 
+ *                          number of occurrence of a value
+ *
  * @return     True if solved, false if no solution exists.
  */
-bool solveSudoku(Sudoku &game, int occurrenceTable[])
+bool solveSudoku(Sudoku &game, SudokuConstraints &constraints)
 {
 	if (game.isSolved())
 	{
@@ -191,77 +224,39 @@ bool solveSudoku(Sudoku &game, int occurrenceTable[])
 	}
 	int emptyCellRow;
 	int emptyCellCol;
-	if (!selectEmptyCell(game, emptyCellRow, emptyCellCol))
+	if (!selectEmptyCell(game, constraints, emptyCellRow, emptyCellCol))
 	{
 		return false;
 	}
 	std::vector<int> possibleChoices;
 	findChoices(game, emptyCellRow, emptyCellCol, possibleChoices);
-	std::map<int, int> candidateChoices;
+	std::multimap<int, int> candidateChoices;
 	for (int i = 0; i < possibleChoices.size(); i++)
 	{
-		candidateChoices[occurrenceTable[possibleChoices.at(i) - 1]] = 
-			possibleChoices.at(i);
+		candidateChoices.insert(std::pair<int,int>
+			(
+				constraints.getValueOccurrence(possibleChoices.at(i)),
+				possibleChoices.at(i)
+			));
 	}
 	for (std::map<int, int>::iterator i = candidateChoices.begin(); 
 		i != candidateChoices.end(); i++)
 	{
 		game.fillCell(emptyCellRow, emptyCellCol, i->second);
-		occurrenceTable[i->second - 1]--;
-		if (solveSudoku(game, occurrenceTable))
+		constraints.addConstraint(emptyCellRow, emptyCellCol, i->second);
+		if (solveSudoku(game, constraints))
 		{
 			return true;
 		}
-		occurrenceTable[i->second - 1]++;
 		game.eraseCell(emptyCellRow, emptyCellCol);
+		constraints.removeConstraint(emptyCellRow, emptyCellCol, i->second);
 	}
 	return false;
 }
 
 
-/**
- * @brief      Updates the occurrenceTable according to game.
- *
- * @param      game             The Sudoku game
- * @param      occurrenceTable  An array with 9 elements where the content at 
- *             index i corresponds to the  number of occurrence of the value
- *             i + 1 in the game
- */
-void updateOccurrenceTable(Sudoku &game, int occurrenceTable[])
-{
-	for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
-	{
-		for (int col = 0; col < Sudoku::GRID_DIMENSION; col++)
-		{
-			if (game.getCell(row, col) != Sudoku::EMPTY_VALUE)
-			{
-				occurrenceTable[game.getCell(row, col) - 1]++;
-			}
-		}
-	}
-}
-
-
 bool solveSudoku(Sudoku &game)
 {
-	int occurrenceTable[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	updateOccurrenceTable(game, occurrenceTable);
-	return solveSudoku(game, occurrenceTable);
+	SudokuConstraints constraints(game);
+	return solveSudoku(game, constraints);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
