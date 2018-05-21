@@ -20,7 +20,7 @@ static const std::string BLUE = "\033[34m";
 static const std::string DIM_DEFAULT = "\033[2;39m";
 static const std::string RESET = "\033[0m";
 
-static const std::string LEFT_INDENT = "\t\t";
+static const std::string LEFT_INDENT = "\t";
 static const std::string HORIZONTAL_BOARDER = LEFT_INDENT + DIM_DEFAULT +
 	"-------+-------+-------\n" + RESET;
 static const std::string VERTICAL_BOARDER = DIM_DEFAULT + "|" + RESET;
