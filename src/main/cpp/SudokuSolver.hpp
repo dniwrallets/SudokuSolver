@@ -20,7 +20,7 @@
  * @param[in]  row              The row position
  * @param[in]  col              The col column position
  * @param      possibleChoices  A vector pointer that contains all possible 
- *             choices
+ *             choices.
  */
 void findChoices(Sudoku &game, int row, int col, 
 	std::vector<int> &possibleChoices);
