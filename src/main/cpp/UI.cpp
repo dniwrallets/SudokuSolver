@@ -22,7 +22,7 @@ static const std::string RESET = "\033[0m";
 
 static const std::string LEFT_INDENT = "\t\t";
 static const std::string HORIZONTAL_BOARDER = LEFT_INDENT + DIM_DEFAULT +
-	"+-------+-------+-------+\n" + RESET;
+	"-------+-------+-------\n" + RESET;
 static const std::string VERTICAL_BOARDER = DIM_DEFAULT + "|" + RESET;
 static const std::string BLANK_CELL = RED + "-" + RESET;
 
@@ -31,9 +31,10 @@ void printSudoku(Sudoku &game)
 {
 	int **puzzle = game.getPuzzle();
 	int **solution = game.getSolution();
+	std::cout << std::endl;
 	for (int row = 0; row < Sudoku::GRID_DIMENSION; row++)
 	{
-		if (row % Sudoku::BOX_DIMENSION == 0)
+		if (row % Sudoku::BOX_DIMENSION == 0 && row != 0)
 		{
 			std::cout << HORIZONTAL_BOARDER;
 		}
@@ -41,7 +42,7 @@ void printSudoku(Sudoku &game)
 		{
 			if (col == 0)
 			{
-				std::cout << LEFT_INDENT << VERTICAL_BOARDER;
+				std::cout << LEFT_INDENT;
 			}
 			else if (col % Sudoku::BOX_DIMENSION == 0)
 			{
@@ -63,7 +64,7 @@ void printSudoku(Sudoku &game)
 				std::cout << " " << GREEN << puzzle[row][col] << RESET;
 			}
 		}
-		std::cout << " " << VERTICAL_BOARDER << std::endl;
+		std::cout << std::endl;
 	}
-	std::cout << HORIZONTAL_BOARDER;
+	std::cout << std::endl;
 }
