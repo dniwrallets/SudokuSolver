@@ -13,10 +13,10 @@
 #include <vector>
 
 
-class SudokuConstraints
+class SudokuOccurrenceData
 {
 public:
-	SudokuConstraints(Sudoku &game)
+	SudokuOccurrenceData(Sudoku &game)
 	{
 		valueOccurrenceTable = 
 			new int[Sudoku::MAX_VALUE - Sudoku::MIN_VALUE + 1];
@@ -48,7 +48,7 @@ public:
 	}
 
 
-	~SudokuConstraints()
+	~SudokuOccurrenceData()
 	{
 		delete[] valueOccurrenceTable;
 		delete[] rowOccurrenceTable;
@@ -72,7 +72,7 @@ public:
 	}
 
 
-	void addConstraint(int row, int col, int value)
+	void addOccurrence(int row, int col, int value)
 	{
 		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
 			col / Sudoku::BOX_DIMENSION;
@@ -83,7 +83,7 @@ public:
 	}
 
 
-	void removeConstraint(int row, int col, int value)
+	void removeOccurrence(int row, int col, int value)
 	{
 
 		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
@@ -112,7 +112,7 @@ private:
  *
  * @return     true if a cell is found, false otherwise.
  */
-static bool selectEmptyCell(Sudoku &game, SudokuConstraints &constraints,
+static bool selectEmptyCell(Sudoku &game, SudokuOccurrenceData &occurrenceData,
 	int &emptyCellRow, int &emptyCellCol)
 {
 	const int NOT_FOUND = -1;
@@ -126,7 +126,7 @@ static bool selectEmptyCell(Sudoku &game, SudokuConstraints &constraints,
 			if (game.getCell(row, col) == Sudoku::EMPTY_VALUE)
 			{
 				int numberOfConstraints = 
-					constraints.getNumberOfConstraints(row, col);
+					occurrenceData.getNumberOfConstraints(row, col);
 				if (currentNumberOfConstraints == NOT_FOUND ||
 					numberOfConstraints > currentNumberOfConstraints)
 				{
@@ -134,13 +134,6 @@ static bool selectEmptyCell(Sudoku &game, SudokuConstraints &constraints,
 					currentBestRow = row;
 					currentBestCol = col;
 				}
-			}
-			if (currentNumberOfConstraints == 
-				Sudoku::MAX_VALUE - Sudoku::MIN_VALUE)
-			{
-				emptyCellRow = currentBestRow;
-				emptyCellCol = currentBestCol;
-				return true;
 			}
 		}
 	}
@@ -209,14 +202,14 @@ void findChoices(Sudoku &game, int row, int col,
 /**
  * @brief      Solves the Sudoku game via backtracking algorithm.
  *
- * @param      game         The Sudoku game
- * @param      constraints  The SudokuConstraints object that keeps track of
- *                          number of occupied cells in a row/col, or the 
- *                          number of occurrence of a value
+ * @param      game            The Sudoku game
+ * @param      occurrenceData  The SudokuOccurrenceData object that keeps track
+ *                             of number of occupied cells in a row/col, or the
+ *                             number of occurrence of a value
  *
  * @return     True if solved, false if no solution exists.
  */
-bool solveSudoku(Sudoku &game, SudokuConstraints &constraints)
+bool solveSudoku(Sudoku &game, SudokuOccurrenceData &occurrenceData)
 {
 	if (game.isSolved())
 	{
@@ -224,7 +217,7 @@ bool solveSudoku(Sudoku &game, SudokuConstraints &constraints)
 	}
 	int emptyCellRow;
 	int emptyCellCol;
-	if (!selectEmptyCell(game, constraints, emptyCellRow, emptyCellCol))
+	if (!selectEmptyCell(game, occurrenceData, emptyCellRow, emptyCellCol))
 	{
 		return false;
 	}
@@ -235,7 +228,7 @@ bool solveSudoku(Sudoku &game, SudokuConstraints &constraints)
 	{
 		candidateChoices.insert(std::pair<int,int>
 			(
-				constraints.getValueOccurrence(possibleChoices.at(i)),
+				occurrenceData.getValueOccurrence(possibleChoices.at(i)),
 				possibleChoices.at(i)
 			));
 	}
@@ -243,13 +236,13 @@ bool solveSudoku(Sudoku &game, SudokuConstraints &constraints)
 		i != candidateChoices.end(); i++)
 	{
 		game.fillCell(emptyCellRow, emptyCellCol, i->second);
-		constraints.addConstraint(emptyCellRow, emptyCellCol, i->second);
-		if (solveSudoku(game, constraints))
+		occurrenceData.addOccurrence(emptyCellRow, emptyCellCol, i->second);
+		if (solveSudoku(game, occurrenceData))
 		{
 			return true;
 		}
 		game.eraseCell(emptyCellRow, emptyCellCol);
-		constraints.removeConstraint(emptyCellRow, emptyCellCol, i->second);
+		occurrenceData.removeOccurrence(emptyCellRow, emptyCellCol, i->second);
 	}
 	return false;
 }
@@ -257,6 +250,6 @@ bool solveSudoku(Sudoku &game, SudokuConstraints &constraints)
 
 bool solveSudoku(Sudoku &game)
 {
-	SudokuConstraints constraints(game);
-	return solveSudoku(game, constraints);
+	SudokuOccurrenceData occurrenceData(game);
+	return solveSudoku(game, occurrenceData);
 }
