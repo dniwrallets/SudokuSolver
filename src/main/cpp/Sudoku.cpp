@@ -29,13 +29,10 @@ Sudoku::Sudoku(int** p)
 	puzzle = new int*[GRID_DIMENSION];
 	solution = new int*[GRID_DIMENSION];
 	numberOfEmptyCells = 0;
-	for (int i = 0; i < GRID_DIMENSION; i++)
-	{
-		puzzle[i] = new int[GRID_DIMENSION];
-		solution[i] = new int[GRID_DIMENSION];
-	}
 	for (int row = 0; row < GRID_DIMENSION; row++)
 	{
+		puzzle[row] = new int[GRID_DIMENSION];
+		solution[row] = new int[GRID_DIMENSION];
 		for (int col = 0; col < GRID_DIMENSION; col++)
 		{
 			puzzle[row][col] = p[row][col];
