@@ -33,9 +33,18 @@ public:
 	 * @brief      Constructs the object from an 2D array representing the 
 	 *             puzzle
 	 *
-	 * @param      puzzle  2D array representing the puzzle
+	 * @param      p  2D array representing the puzzle
 	 */
-	Sudoku(int **puzzle);
+	Sudoku(int **p);
+
+
+	/**
+	 * @brief      Constructs the object from a string representing the 
+	 *             puzzle
+	 *
+	 * @param[in]  p  string representing the puzzle
+	 */
+	Sudoku(std::string p);
 
 
 	/**

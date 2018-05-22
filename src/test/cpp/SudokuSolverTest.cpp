@@ -1,280 +1,94 @@
 /**
- * SudokuSolver test driver
+ * SudokuSolver Test driver that times the solver's performance across 5000 
+ *   puzzles
  * 
  * 
- * 2018-05-20
+ * 2018-05-22
  * John Y
  */
 
+
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
 #include <assert.h>
 #include <time.h>
 
 #include "../../main/cpp/Sudoku.hpp"
 #include "../../main/cpp/SudokuSolver.hpp"
-#include "../../main/cpp/UI.hpp"
 
 
-void convertPuzzleDimension(int *p1d, int **p2d)
+const std::string FILE_PATH = "../resources/puzzles.txt";
+const int TRAILS_PER_TEST = 2;
+
+
+/**
+ * @brief      Loads the sudoku repository at FILE_PATH
+ *
+ * @param      puzzles  The vector reference pointer containing the puzzles
+ *
+ * @return     True if read is successful, false otherwise.
+ */
+bool loadRepository(std::vector<Sudoku *> &puzzles)
 {
-	for (int i = 0; i < Sudoku::GRID_DIMENSION * Sudoku::GRID_DIMENSION; i++)
+	std::string puzzle;
+	std::ifstream puzzleRepository(FILE_PATH);
+	if (!puzzleRepository.is_open())
 	{
-		p2d[i/Sudoku::GRID_DIMENSION][i % Sudoku::GRID_DIMENSION] = p1d[i];
+		std::cout << "Unable to open file at: " << FILE_PATH << 
+			". Exiting now..." << std::endl;
+		return false;
 	}
+	std::cout << "Sudoku repository opened successfully, loading puzzles..."
+		<< std::endl;
+	while (std::getline(puzzleRepository, puzzle))
+	{
+		puzzles.push_back(new Sudoku(puzzle));
+	}
+	std::cout << "Done, " << puzzles.size() << " puzzle(s) loaded." << std::endl;
+	return true;
 }
 
 
 int main(int argc, char const *argv[])
 {
-	
-	int puzzleA1d[] =
-	{
-		6,0,0,0,0,8,9,4,0,
-		9,0,0,0,0,6,1,0,0,
-		0,7,0,0,4,0,0,0,0,
-		2,0,0,6,1,0,0,0,0,
-		0,0,0,0,0,0,2,0,0,
-		0,8,9,0,0,2,0,0,0,
-		0,0,0,0,6,0,0,0,5,
-		0,0,0,0,0,0,0,3,0,
-		8,0,0,0,0,1,6,0,0
-	};
-	int puzzleB1d[] =
-	{
-		0,0,2,8,0,0,0,0,0,
-		0,3,0,0,6,0,0,0,7,
-		1,0,0,0,0,0,0,4,0,
-		6,0,0,0,9,0,0,0,0,
-		0,5,0,6,0,0,0,0,9,
-		0,0,0,0,5,7,0,6,0,
-		0,0,0,3,0,0,1,0,0,
-		0,7,0,0,0,6,0,0,8,
-		4,0,0,0,0,0,0,2,0
-	};
-	int puzzleC1d[] =
-	{
-		0,2,0,3,0,0,0,0,0,
-		4,0,0,0,5,0,0,0,0,
-		0,0,6,0,0,1,7,0,0,
-		5,0,0,2,0,0,0,1,0,
-		0,3,0,0,0,0,0,4,0,
-		0,0,1,0,0,6,8,0,0,
-		0,0,9,0,0,0,0,7,0,
-		0,0,0,1,0,0,9,0,0,
-		0,0,0,0,0,9,0,6,8,
-	};
-	int puzzleD1d[] =
-	{
-		9,8,0,7,0,0,0,0,0,
-		7,0,0,0,0,0,6,0,0,
-		0,0,6,0,5,0,0,0,0,
-		0,4,0,0,0,5,0,3,0,
-		0,0,7,9,0,0,5,0,0,
-		5,0,0,0,2,0,0,0,1,
-		0,0,8,5,0,0,9,0,0,
-		0,0,0,0,1,0,0,0,0,
-		0,0,0,0,0,3,0,2,4
-	};
-	int puzzleE1d[] = 
-	{
-		5,0,0,0,0,6,0,2,9,
-		0,6,0,0,0,0,0,0,7,
-		0,0,1,0,9,4,0,0,0,
-		7,0,0,1,0,0,9,0,2,
-		0,2,0,0,0,0,0,4,0,
-		4,0,0,0,0,0,6,0,0,
-		0,0,0,0,2,0,0,0,8,
-		0,0,0,0,0,1,3,0,0,
-		8,3,0,0,0,5,0,0,0
-	};
-	int puzzleF2d[] =
-	{
-		4,1,0,9,0,6,0,0,0,
-		0,0,0,0,0,0,0,7,0,
-		0,0,5,0,4,0,0,0,0,
-		6,0,0,0,0,0,5,9,0,
-		0,0,0,0,5,0,0,0,1,
-		8,0,4,0,0,3,0,0,0,
-		0,0,0,3,0,0,0,0,2,
-		9,0,8,0,0,0,0,0,0,
-		0,3,0,0,0,0,6,0,0
-	};
-	int puzzleG1d[] =
-	{
-		0,0,0,0,0,0,0,0,8,
-		0,0,0,0,4,0,7,0,6,
-		0,0,7,0,0,8,0,9,0,
-		0,0,1,0,0,6,0,0,9,
-		0,5,0,0,0,0,0,0,0,
-		3,0,0,2,0,0,0,1,0,
-		0,0,6,0,0,1,9,0,0,
-		2,0,0,0,3,0,0,0,0,
-		0,4,0,5,0,0,0,7,0
-	};
-	int puzzleH1d[] =
-	{
-		0,2,0,3,0,0,0,0,0,
-		4,0,0,0,5,0,0,0,0,
-		0,0,6,0,0,1,7,0,0,
-		5,0,0,2,0,0,0,1,0,
-		0,3,0,0,0,0,0,4,0,
-		0,0,1,0,0,6,8,0,0,
-		0,0,9,0,0,0,0,7,0,
-		0,0,0,1,0,0,9,0,0,
-		0,0,0,0,0,9,0,6,8
-	};
-	int puzzleI1d[] =
-	{
-		0,0,0,1,0,0,5,3,0,
-		5,0,0,0,9,0,0,0,2,
-		0,8,0,0,6,0,0,4,0,
-		0,0,4,5,0,0,0,0,0,
-		2,0,0,0,0,0,0,0,7,
-		0,0,0,0,0,6,8,0,0,
-		0,3,0,0,2,0,0,6,0,
-		8,0,0,0,5,0,0,0,3,
-		0,7,5,0,0,4,0,0,0
-	};
-	int puzzleJ1d[] =
-	{
-		0,0,0,0,0,1,0,0,0,
-		0,0,7,9,0,0,0,0,5,
-		0,9,3,0,5,0,8,0,0,
-		7,0,0,0,0,0,0,8,0,
-		5,0,6,0,7,0,1,0,3,
-		0,1,0,0,0,0,0,0,2,
-		0,0,5,0,3,0,4,7,0,
-		8,0,0,0,0,2,3,0,0,
-		0,0,0,4,0,0,0,0,0
-	};
-	int puzzleM1d[] = 
-	{
-		8,0,0,0,0,0,0,0,0,
-		0,0,3,6,0,0,0,0,0,
-		0,7,0,0,9,0,2,0,0,
-		0,5,0,0,0,7,0,0,0,
-		0,0,0,0,4,5,7,0,0,
-		0,0,0,1,0,0,0,3,0,
-		0,0,1,0,0,0,0,6,8,
-		0,0,8,5,0,0,0,1,0,
-		0,9,0,0,0,0,4,0,0
-	};
-	int puzzleN1d[] =
-	{
-		1,0,0,0,0,7,0,9,0,
-		0,3,0,0,2,0,0,0,8,
-		0,0,9,6,0,0,5,0,0,
-		0,0,5,3,0,0,9,0,0,
-		0,1,0,0,8,0,0,0,2,
-		6,0,0,0,0,4,0,0,0,
-		3,0,0,0,0,0,0,1,0,
-		0,4,1,0,0,0,0,0,7,
-		0,0,7,0,0,0,3,0,0
-	};
-	int puzzleO1d[] =
-	{
-		0,0,0,0,7,0,4,2,6,
-		0,1,0,0,0,8,0,0,3,
-		0,0,0,4,9,0,0,0,0,
-		0,4,0,0,0,0,2,0,8,
-		3,0,0,0,0,0,0,0,5,
-		2,0,6,0,0,0,0,7,0,
-		0,0,0,0,1,4,0,0,0,
-		1,0,0,7,0,0,0,8,0,
-		9,2,5,0,6,0,0,0,0
-	};
-
-	std::cout << "Building Puzzle...";
-
-	int **puzzle = new int*[Sudoku::GRID_DIMENSION];
-	for (int i = 0; i < Sudoku::GRID_DIMENSION; i++)
-	{
-		puzzle[i] = new int[Sudoku::GRID_DIMENSION];
-	}
-
 	std::vector<Sudoku*> puzzles;
-
-	convertPuzzleDimension(puzzleA1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-	
-	convertPuzzleDimension(puzzleB1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleC1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleD1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleE1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleM1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleN1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleH1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleI1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleJ1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleM1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleN1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	convertPuzzleDimension(puzzleO1d, puzzle);
-	puzzles.push_back(new Sudoku(puzzle));
-
-	for (int i = 0; i < Sudoku::GRID_DIMENSION; i++)
+	if (!loadRepository(puzzles))
 	{
-		delete[] puzzle[i];
+		return EXIT_FAILURE;
 	}
-	delete[] puzzle;
-
-	std::cout << "Done" << std::endl <<std::endl;
 
 	clock_t totalTime = 0;
-	for (int i = 0; i < puzzles.size(); i++)
+	for (int test = 0; test < puzzles.size(); test++)
 	{
-		std::cout << "Running test " << i << ":"<< std::endl;
-		clock_t testTime = 0;
-		for (int j = 0; j < 3; j++)
+		clock_t trial = 0;
+		for (int trail = 0; trail < TRAILS_PER_TEST; trail++)
 		{
-			puzzles.at(i)->resetSolution();
+			puzzles.at(test)->resetSolution();
 			bool isSolved;
 			clock_t start = clock();
-			isSolved = solveSudoku(*puzzles.at(i));
+			isSolved = solveSudoku(*puzzles.at(test));
 			clock_t stop = clock();
 			assert(isSolved);
-			std::cout << "\t Trial: " << j << ", time: " 
-				<< (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC << "ms"
-				<< std::endl;
-			testTime += (stop - start);
-			totalTime += testTime;
+			trial += (stop - start);
+			totalTime += trial;
 		}
-		std::cout << "Test " << i << " complete, average time:" 
-			<< (double)(testTime / 3.0) * 1000.0 / CLOCKS_PER_SEC 
-			<< " ms" << std::endl << std::endl;
 	}
-	
-	std::cout << "Test complete, total time: " 
-		<< (double)(totalTime / 3.0) * 1000.0 / CLOCKS_PER_SEC << "ms" 
+
+	std::cout << std::endl << "Test complete, total CPU time: " 
+		<< (double)(totalTime) / CLOCKS_PER_SEC / TRAILS_PER_TEST << "s"
 		<< std:: endl;
+	std::cout << "Average CPU time per puzzle: " 
+		<< (double)(totalTime) * 1000.0 / CLOCKS_PER_SEC / TRAILS_PER_TEST /
+			puzzles.size()
+		<< "ms" << std::endl;
 	std::cout << "Freeing memory..." << std::endl;
 
-	for (int i = 0; i < puzzles.size(); i++)
+	for (int test = 0; test < puzzles.size(); test++)
 	{
-		delete puzzles.at(i);
+		delete puzzles.at(test);
 	}
-
 	return 0;
 }
+

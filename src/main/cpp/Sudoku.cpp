@@ -46,6 +46,28 @@ Sudoku::Sudoku(int** p)
 }
 
 
+Sudoku::Sudoku(std::string p)
+{
+	puzzle = new int*[GRID_DIMENSION];
+	solution = new int*[GRID_DIMENSION];
+	numberOfEmptyCells = 0;
+	for (int row = 0; row < GRID_DIMENSION; row++)
+	{
+		puzzle[row] = new int[GRID_DIMENSION];
+		solution[row] = new int[GRID_DIMENSION];
+		for (int col = 0; col < GRID_DIMENSION; col++)
+		{
+			puzzle[row][col] = p[row * GRID_DIMENSION + col] - '0';
+			if (puzzle[row][col] == EMPTY_VALUE)
+			{
+				numberOfEmptyCells++;
+			}
+		}
+	}
+	resetSolution();
+}
+
+
 Sudoku::~Sudoku()
 {
 	for (int i = 0; i < GRID_DIMENSION; i++)

@@ -2,7 +2,7 @@
  * SudokuSolver function implementation.
  * 
  * 
- * 2018-05-20
+ * 2018-05-22
  * John Y
  */
 
@@ -16,6 +16,11 @@
 class SudokuOccurrenceData
 {
 public:
+	/**
+	 * @brief      Constructs the object.
+	 *
+	 * @param      game  The Sudoku game
+	 */
 	SudokuOccurrenceData(Sudoku &game)
 	{
 		valueOccurrenceTable = 
@@ -44,10 +49,13 @@ public:
 					boxOccurrenceTable[box]++;
 				}
 			}
-		}	
+		}
 	}
 
 
+	/**
+	 * @brief      Destroys the object.
+	 */
 	~SudokuOccurrenceData()
 	{
 		delete[] valueOccurrenceTable;
@@ -57,13 +65,29 @@ public:
 	}
 
 
+	/**
+	 * @brief      Get the number of occurrences of a value 
+	 *
+	 * @param[in]  value  The value
+	 *
+	 * @return     The number of times the value appears.
+	 */
 	int getValueOccurrence(int value)
 	{
 		return valueOccurrenceTable[value - 1];
 	}
 
 
-	int getNumberOfConstraints(int row, int col)
+	/**
+	 * @brief      Get the total number of fill cells that effects possible 
+	 *             value
+	 *
+	 * @param[in]  row   The row position
+	 * @param[in]  col   The column position
+	 *
+	 * @return     The number of constraints.
+	 */
+	int getNumberOfFilledCells(int row, int col)
 	{
 		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
 			col / Sudoku::BOX_DIMENSION;
@@ -72,6 +96,13 @@ public:
 	}
 
 
+	/**
+	 * @brief      Adds a new occurrence.
+	 *
+	 * @param[in]  row    The row position
+	 * @param[in]  col    The column position
+	 * @param[in]  value  The value
+	 */
 	void addOccurrence(int row, int col, int value)
 	{
 		int box = row / Sudoku::BOX_DIMENSION * Sudoku::BOX_DIMENSION + 
@@ -83,6 +114,13 @@ public:
 	}
 
 
+	/**
+	 * @brief      Removes an occurrence.
+	 *
+	 * @param[in]  row    The row position
+	 * @param[in]  col    The column position
+	 * @param[in]  value  The value
+	 */
 	void removeOccurrence(int row, int col, int value)
 	{
 
@@ -126,7 +164,7 @@ static bool selectEmptyCell(Sudoku &game, SudokuOccurrenceData &occurrenceData,
 			if (game.getCell(row, col) == Sudoku::EMPTY_VALUE)
 			{
 				int numberOfConstraints = 
-					occurrenceData.getNumberOfConstraints(row, col);
+					occurrenceData.getNumberOfFilledCells(row, col);
 				if (currentNumberOfConstraints == NOT_FOUND ||
 					numberOfConstraints > currentNumberOfConstraints)
 				{
